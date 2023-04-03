@@ -47,6 +47,10 @@ module vectorpotential_tools
   character(len=*), parameter :: vpn_xyGaussian = 'xy Gaussian'
   character(len=*), parameter :: vpn_zyCW       = 'zy CW'
   !
+  !add by ygyang
+  character(len=*), parameter :: vpn_SFA        = 'z SFA'
+  !
+  !
   real(xk), save            :: vp_scale   = 0.00_xk     ! Overall magnitude of the vector potential
   character(len=clen), save :: vp_shape   = ' '         ! Shape of the vector-potential. See vp_apot()
                                                         ! below for the list of possibilites. There is
@@ -59,6 +63,10 @@ module vectorpotential_tools
                                                         ! See vp_apot() and below. 
   real(xk), save            :: vp_scale_x = 0.00_xk     ! Additional scaling parameter for the extra polatization component
   real(xk), save            :: vp_param_x(20)           ! Same as vp_param, for pulse shapes defined by two orthogonal
+                                                        ! polarizations. ("x" stands for "extra", not the X axis!)
+  !
+  !  Parameters below this line are unpacked from vp_param() upon the first call to vp_apot()
+  !
                                                         ! polarizations. ("x" stands for "extra", not the X axis!)
   !
   !  Parameters below this line are unpacked from vp_param() upon the first call to vp_apot()
@@ -150,6 +158,13 @@ module vectorpotential_tools
           th = 0._xk
         end if
         ph = atan2(ay,ax)
+      !
+      !add by ygyang
+      case (vpn_SFA)
+        apot = vp_scale * SFAVP(t,omega,phase,origin,width)
+        th   = 0._xk
+        ph   = 0._xk
+      !
     end select
     if (present(theta)) theta = th
     if (present(phi)  ) phi   = ph
@@ -180,6 +195,8 @@ module vectorpotential_tools
           call init_GaussianVP('along lab Y',vp_param_x,x_omega,x_phase,x_origin,x_width,x_gau_toff1,x_gau_toff2,x_gau_alpha)
         case (vpn_zyCW)
           omega = vp_param(1)
+        case (vpn_SFA)
+          call init_Sin2VP('along lab Z',vp_param,omega,phase,origin,width)
       end select
       first = .false.
       !$omp flush(first)
@@ -294,6 +311,7 @@ module vectorpotential_tools
     end if
   end function Sin2VP
   !
+  !
   subroutine init_Sin2VP(tag,vp_param,omega,phase,origin,width)
     character(len=*), intent(in) :: tag
     real(xk), intent(in)         :: vp_param(:)
@@ -313,6 +331,27 @@ module vectorpotential_tools
     write (out,"(t5,'        Full width at zero = ',g24.13,' [a.u. time]')") width
     !
   end subroutine init_Sin2VP
+  !
+  !  Cos2 E-potential
+  !
+  function SFAVP(time,omega,phase,origin,width)
+    real(xk), intent(in) :: time           
+    real(xk)             :: SFAVP    
+    real(xk), intent(in) :: omega, phase, origin, width
+    !
+    real(xk)             :: t_carrier
+    !
+    t_carrier = time - origin*2*pi_xk/omega
+    if (abs(t_carrier)>=(0.5_xk*width*2._xk*pi_xk/omega)) then
+      SFAVP = 0._xk
+    else
+      SFAVP = 0.5_xk*sin((omega/width+omega)*t_carrier+phase)/(omega/width+omega)&
+            + 0.5_xk*sin((omega/width-omega)*t_carrier-phase)/(omega/width-omega)&
+            + sin(omega*t_carrier+phase)/omega
+    end if
+  end function SFAVP 
+    !
+    !
   !
   !  Flat-top vector-potential with Sin^2 raising/falling edge implementation
   !
