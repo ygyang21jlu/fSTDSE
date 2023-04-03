@@ -1,0 +1,85 @@
+Last updated: 2015 July 11
+------------
+
+Potential pitfalls and trouble-shooting
+
+1 Choosing the radial grid
+
+   The appropriate choice of the radial grids is highly dependent on the 
+   atomic potential and the laser pulse, with no generally useful default.
+   When choosing grid parameters, keep in mind the following factors:
+
+   - Away from the origin, the grid should be able to support the highest
+     photoelectron kinetic energy which will be encountered in the simulation.
+     For weak-field processes, the maximum energy is (n*h*nu-IP), where n is 
+     the desired photon order of the process. For strong-field processes, 
+     it is 10*Up, where Up is the ponderomotive energy. The corresponding 
+     de Broglie wavelength is 2*pi/sqrt(2*Emax); you will need at least 
+     four grid points per de Broglie wavelength to resolve the oscillation; 
+     more if accurate results are desired.
+
+   - Close to the origin, the grid should be able to support atomic solutions.
+     Rapidly-changing potentials (especially the attractive potentials)
+     require higher grid densities near the origin.
+
+   - Avoid rapid changes in grid density. Such changes decrease the accuracy
+     of the derivative operators. They also typically require smaller time
+     steps to achieve stable propagation.
+
+   - Monitor grid quality by examining the -left- wavefunctions. Rapid 
+     oscillations in the left wavefunctions often indicate a poor grid
+     choice. Use "initial_wf_dump_prefix" and "final_wf_dump_prefix"
+     to generate ASCII dumps of the radial wavefunctions, respectively
+     at the beginning and the end of the simulation.
+
+2 Choosing the time step
+
+   The time step is sensitive to the details of the grid, atomic potential,
+   and the laser pulse. As the result, it is not possible to set a generally-
+   safe default. Here are some hints for spotting trouble:
+
+   - Monitor the wavefunction norm ("<l|r>=" in the main output). As long as
+     the wavefunction is not touching the absorbing boundary, the real part
+     of the overlap must stay close to one. The imaginary part should always
+     be close to zero; values substantially different from zero indicate 
+     an excessively large time step and/or a poor choice of the radial grid.
+
+   - Monitor expectation of the total Hamiltonian ("<l|h|r>=" in the main
+     output). The real part must remain sensible; in the absence of the
+     laser field, it should be above the ground-state energy. As long as
+     the wavefunction is not touching the absorbing boundary, the imaginary
+     part must be close to zero. For problems where substantial wavefunction
+     absorption is expected, expectation of the Hamiltonian excluding the 
+     absorbing boundary is available in the detailed output (see input
+     keyword "detail_output").
+
+   - If any observables are computed during the simulation (e.g. the dipole),
+     monitor the imaginary part of the observables. It must be close to zero.
+     The imaginary part of the dipole is available through the detailed output.
+
+   - When using a non-uniform grid, pay close attention to the form of the 
+     wavefunction in the densest part of the grid (typically at the origin).
+     Presence of excessive, seemingly random noise in this area indicates
+     an excessively large time step, especially if the initial wavefunction
+     appears smooth in this region. Use input keywords INITIAL_WF_DUMP_PREFIX
+     and FINAL_WF_DUMP_PREFIX to save radial wavefunctions. Use a script
+     ./examples/plot-density.sh to visualize them.
+
+3 Other parameters affecting accuracy of the simulation
+
+   - Atomic propagator pre-computes and caches some terms which depend on the
+     time step. The decision to recompute these terms is affected by (pt_eps_dt)
+     parameter.
+
+   - Laser propagator needs to solve a system of non-tridiagonal linear 
+     equations when propagating the L=0+1 sub-block. The accuracy of the
+     solution is affected by (bicg_epsilon). The default is sufficient
+     to achieve machine accuracy in the solutions. Reducing bicg_epsilon
+     below 1e-12 will likely result in a very unstable propagator.
+
+   - Propagation for non-linearly-polarized fields requires repeated
+     wavefunction rotation. The accuracy of the rotation is affected
+     by the (rt_max_rot) parameter. The default (1e-3) should be sufficient
+     to maintain at least 10 significant digits in the results. If more
+     accurate results are required, rt_max_rot should be decreased further.
+

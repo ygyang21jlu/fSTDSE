@@ -1,0 +1,249 @@
+Last updated: 2015 Oct 12
+------------
+
+Test runs and examples
+
+All tests and examples are in the ./examples/ directory. The expected run times
+are on a 3.6 GHz i7-3820 CPU (4 cores, 8 harware threads), using all available 
+CPU cores [Not all examples benefit from parallel execution on this CPU]. 
+
+Please keep in mind that the default configuration file (vanilla.mak) supplied
+with the distribution emphasizes portability and robustness of the executable
+over its performance. In particular, it enables neither the parallel (OpenMP) 
+execution, nor advanced vectorization. All times shown below were obtained with
+an optimized, OpenMP build (configuration file: configs/shelob-ifort_opt.mak).
+An unoptimized, single-core build may result in execution wall-times longer
+by a factor of 10x on the same hardware.
+
+Sample inputs are in the the files with the *.inp extension; reference outputs 
+are in matching *.out_ref files. For some of the examples, reference radial 
+wavefunctions are in wfn/*.ref files.
+
+To re-run all tests, use "run-all.sh". To clean up test results, use "clean.sh".
+(Both scripts are in the ./examples/ subdirectory.)
+
+The examples are:
+
+* [E1] Resonant 1-photon 1S->2P_0 bound transition in atomic hydrogen, using 
+  linearly polarized 1.45 fs Gaussian pulse at 0.1 TW/cm^2 (peak); uniform
+  300-point radial grid.
+
+  Input:      hydrogen_1S_2P0_uniform.inp
+  Cores used: 4
+  Run time:   2 seconds (double); 1 second (single); 4 minutes (quad)
+  Reference:  hydrogen_1S_2P0_uniform.out_ref (main output)
+              hydrogen_1S_2P0_uniform.out_refquad (main output, quad precision)
+              wfn/H-1S-2Pz-WU-* (radial wavefunction)
+
+  This example uses a uniform 300-point radial grid at 0.2 Bohr resolution.
+  Relatively coarse uniform grid allows large time steps, so that the entire
+  simulation takes 500 time steps. The accuracy is still quite good, with
+  the H ground state computed at -0.500018 Hartree. 1S->2P0 excitation
+  probability is 0.3099E-02. Single-precision version of the example gives
+  a result accurate to 4 significant digits. Quad- and double-precision
+  results agree to 12 digits.
+
+  This example should be compared to [E2], which uses a much tighter grid.
+
+* [E2] Resonant 1-photon 1S->2P_0 bound transition in atomic hydrogen, using 
+  linearly polarized 1.45 fs Gaussian pulse at 0.1 TW/cm^2 (peak); log-uniform
+  1000-point grid, grid spacing varies from 0.02 to 0.2 Bohr.
+
+  Input:      hydrogen_1S_2P0.inp
+  Cores used: 4
+  Run time:   1 minute (double); 30 seconds (single); 2.5 hours (quad)
+  Reference:  hydrogen_1S_2P0.out_ref (main output)
+              hydrogen_1S_2P0.out_refquad (main output, quad precision)
+              wfn/H-1S-2Pz-WL-* (radial wavefunction)
+
+  Log-uniform grid leads to a less well-behaved Hamiltonian, necessitating
+  a larger number of time steps (20000) to maintain numerical stability.
+  The numerical accuracy is also higher, with the ground state at -0.4999933.
+  1S->2P0 excitation probability is 0.30996E-02. Single-precision version
+  of the example is accurate to 3 significant digits. Quad- and double-precision
+  results agree to 12 digits.
+
+* [E3] 1-photon ionization of hydrogen 2P_0 state, using Z-polarized 1.45 fs 
+  pulse at 1TW/cm^2 (peak) and 13.6 eV central energy; log-uniform 1000-point 
+  grid, spacing varies from 0.02 to 0.2 Bohr.
+
+  Input:      hydrogen_2P0_ion.inp
+  Cores used: 4
+  Run time:   1 minute (double); 30 seconds (single); 3 hours (quad)
+  Reference:  hydrogen_2P0_ion.out_ref (main output)
+              hydrogen_2P0_ion.out_refquad (main output, quad precision)
+              wfn/H-2Pz-WL-* (radial wavefunction)
+
+  Total ionization probability in the S channel is 0.2023E-04; in the D channel
+  0.1139E-03. Single-precision version of the example gives 3 significant digits
+  in ionization probability. A weak 2-photon peak is also seen in P channel 
+  (0.2657E-08 probability) and F channel (0.1318E-08 probability). Single-
+  precision run reproduces these peaks, but also produces spurious peaks at the
+  same probability level at higher energies. Quad- and double-precision
+  results agree to 12 digits.
+
+* [E4] 1-photon ionization of 3P_1 state of model Ar potential in the vicinity of
+  Cooper minimum, using Z-polarized 1.45 fs pulse at 1TW/cm^2 (peak) and 46.3 eV;
+  log-uniform 2000-point grid, spacing varies from 0.005 to 0.15 Bohr.
+
+  Input:      argon_3P1_cooper.inp
+  Cores used: 4
+  Run time:   6 minutes (double); 2 minutes (single); 17 hours (quad)
+  Reference:  argon_3P1_cooper.out_ref (main output)
+              argon_3P1_cooper.out_refquad (main output, quad precision)
+              wfn/Ar-2P1-Cooper-* (radial wavefunction)
+
+  This example uses an effective potential designed to reproduce experimental
+  one-electron removal energies in Argon atom. The 3P state of this potential
+  is at -0.581373 Hartree; current grid gives -0.581416 Hartree. The photon
+  energy is chosen near the Cooper minimum of this potential. The total ionization
+  probability is 0.2875E-06 (all in the D channel). Note the characteristic 
+  twinned profile of the 1-photon peak in the photoelectron spectrum.
+  Single-precision version gives about 2 significant digits for the ionization 
+  probability. Quad- and double-precision results agree to 12 digits.
+
+  This example should be compared to [E5] below.
+
+* [E5] 1-photon ionization of 3P_1 state of model Ar potential away from the Cooper
+  minimum, using Z-polarized 1.45 fs pulse at 1TW/cm^2 (peak) and 55.0 eV
+
+  Input:      argon_3P1_offcooper.inp
+  Cores used: 4
+  Run time:   6 minutes (double); 2 minutes (single); 18 hours (quad)
+  Reference:  argon_3P1_offcooper.out_ref (main output)
+              argon_3P1_offcooper.out_refquad (quadruple precision)
+              wfn/Ar-2P1-Off-Cooper-* (radial wavefunction)
+
+  This example is the same as [E4], except for the photon energy chosen about
+  9 eV above the Cooper minimum. The total ionization probability is now
+  3.3060E-06 (D channel). Single-precision version gives 2 significant digits
+  in ionization probability.
+
+  This example should be compared to [E4] above.
+
+* [E6] 1-photon ionization of 3P_{-1} state of model Ar potential by left circularly
+  polarized (XY polarization plane) 1.45 fs pulse at 30 eV and 2TW/cm^2;
+  log-uniform 1400-point grid, spacing varies from 0.005 to 0.15 Bohr.
+
+  Input:      argon_3P1m_circ_l.inp
+  Cores used: 4
+  Run time:   6 minutes (double); 3 minutes (single); 11 hours (quad)
+  Reference:  argon_3P1m_circ_l.out_ref (main output)
+              argon_3P1m_circ_l.out_refquad (quadruple precision)
+              wfn/Ar-2P1m-circ_l-* (radial wavefunction, partial)
+
+  This is a non-axially-symmetric weak-field example. The only open ionization
+  channel is to L=2/M=-2 continuum. Calculated 1-photon ionization probability is 
+  7.3674E-04. The 2-photon peak (in L=3/M=-3 continuum) is barely visible, with 
+  ionization probability 3.460E-8.
+
+  Single precision version is accurate to 2 significant digits for the 1-photon
+  probability.
+
+  This example should be compared to [E7] below.
+
+* [E7] 1-photon ionization of 3P_{-1} state of model Ar potential by right circularly
+  polarized (XY polarization plane) 1.45 fs pulse at 30 eV and 2TW/cm^2;
+  log-uniform 1400-point grid, spacing varies from 0.005 to 0.15 Bohr.
+
+  Input:      argon_3P1m_circ_r.inp
+  Cores used: 4
+  Run time:   6 minutes (double); 3 minutes (single); 12 hours (quad)
+  Reference:  argon_3P1m_circ_r.out_ref (main output)
+              argon_3P1m_circ_r.out_refquad (quadruple precision)
+              wfn/Ar-2P1m-circ_r-* (radial wavefunction, partial)
+
+  This example is nearly identical to [E6], except the laser pulse is now right
+  circular-polarized. Now, the L=0/M=0 (3.4721E-4 probability) and L=2/M=0 
+  (1.2282E-4 probability) channels are open for 1-photon ionization. 2-photon
+  channels to L=1/M=1 (1.5152E-9 probability) and L=3/M=1 (2.3072E-9) are
+  also visible. 
+
+  Single-precision version gives 1-photon channels to 2 significant digits. 
+  The 2-photon channel probability is not well reproduced.
+
+* [E8] High-harmonics generation from 1S state of hydrogen atom by linearly-polarized
+  4.84 fs 100 TW 800 nm pulse. Log-uniform 300-point grid, grid spacing varies from 
+  0.04 to 0.4 Bohr. The simulation continues to 24.2 fs to let residual dipole ring 
+  down.
+
+  Input:      hydrogen_1S_hhg_linear.inp
+              hydrogen_1S_hhg_linear.dhr (requires dyson_harmonics.x, not part of this package)
+  Cores used: 8 (logical) / 4 (physical)
+  Run time:   5 minutes (double); 12 hours (quad)
+  Reference:  hydrogen_1S_hhg_linear.out_ref (main output)
+              hydrogen_1S_hhg_linear.out_refquad (quadruple precision)
+              hydrogen_1S_hhg_elliptical_spec.pdf (HHG power spectrum)
+
+  This example illustrates simulation of a high-harmonics spectrum for a hydrogen
+  atom subject to an linearly polarized field (ellipticity 0.1). The free-oscillation
+  radius in this field is about 17 Bohr. Because the absorbing boundary starts at
+  78 Bohr, contributions from both short and long trajectories are included.
+  The expected harmonic cut-off is at 1.20 Hartree (32.7 eV; H21). 
+  The final population within the box is 0.99166. Remaining population 
+  of the 1S ground state is 0.98923. The HHG power spectrum can be derived by 
+  Fourier-transforming the real part of the time-dependent dipole [in H-1S-hhg-lin.detail].
+  The reference spectrum, showing \omega^4 |d_\omega|^2, is in 
+  hydrogen_1S_hhg_elliptical_spec.pdf.
+
+  This example experiences a nearly complete loss of significance in single precision.
+
+  This example should be compared to [E10]
+
+* [E9] Strong-field ionization of hydrogen 2P_0 state by 4.84 fs pulse at 800 nm and
+  100 TW/cm^2 (peak); log-uniform 2200-point grid, spacing varies from 0.04 to 0.4 Bohr.
+
+  Input:      hydrogen_2P0_sfi.inp
+  Cores used: 4
+  Run time:   40 minutes (double); 5 days (quad)
+  Reference:  hydrogen_2P0_sfi.out_ref (main output)
+              hydrogen_2P0_sfi.out_refquad (quadruple precision)
+              hydrogen_2P0_sfi.pdf (ATI spectrum)
+
+  This example calculates an ATI spectrum due to strong-field ionization by a short
+  near-IR pulse. Due to the high field intensity, an extended angular grid is
+  necessary to reach convergence (Lmax = 30 in this example). Because an extended
+  radial grid is needed to prevent electron density reaching the boundary, the 
+  radial grid is relatively coarse, and the initial 2P state has energy of
+  -0.1250013. The 1S ground state is at -0.4999884H on this grid. The simulation 
+  is still axially symmetric. 
+
+  The pulse is sufficiently intense to nearly fully ionize the atom; the final 
+  energy is 0.70073E-01 Hartree. Only 2.69% of the initial population is left
+  in L=1 bound states; the most populated bound channel is L=3 (10.55%). The
+  maximum of the continuum population is in L=4 channel (21.05%), with significant
+  population (3.02E-04 probability) still present in L=15 continuum. The Up in
+  this system is about 6 eV; the ATI peaks are seen up to 55 eV, consistent
+  with the 10Up recollision plateau cut-off.
+
+  This example experiences a nearly complete loss of significance in single precision.
+  Single-precision is also -slower- due to repeated failures in the iterative
+  linear solver, which must be resolved by falling back to a dense LAPACK solver.
+
+* [E10] High-harmonics generation from 1S state of hydrogen atom by elliptically-polarized
+  (Ey/Ez = 0.1) 4.84 fs 100 TW 800 nm pulse. Log-uniform 300-point grid, grid spacing
+  varies from 0.04 to 0.4 Bohr. The simulation continues to 24.2 fs to let residual
+  dipole ring down.
+
+  Input:      hydrogen_1S_hhg_elliptical.inp
+              hydrogen_1S_hhg_elliptical.dhr (requires dyson_harmonics.x, not part of the package)
+  Cores used: 8 (logical) / 4 (physical)
+  Run time:   1 hour (double); 3 days (quad)
+  Reference:  hydrogen_1S_hhg_elliptical.out_ref (main output)
+              hydrogen_1S_hhg_elliptical.out_refquad (quadruple precision)
+              hydrogen_1S_hhg_elliptical_spec.pdf (HHG power spectrum)
+
+  This example illustrates simulation of a high-harmonics spectrum for a hydrogen
+  atom subject to an elliptically polarized field (ellipticity 0.1). The free-oscillation
+  radius in this field is about 17 Bohr. Because the absorbing boundary starts at
+  78 Bohr, contributions from both short and long trajectories are included.
+  The expected harmonic cut-off is at 1.20 Hartree (32.7 eV; H21). 
+  The final population within the box is 0.99177. Remaining population 
+  of the 1S ground state is 0.98964. The HHG power spectrum can be derived by 
+  Fourier-transforming the real part of the time-dependent dipole [in H-1S-hhg-ell.detail].
+  The reference spectrum, showing \omega^4 |d_\omega|^2, is in hydrogen_1S_hhg_elliptical.pdf.
+
+  This example experiences a nearly complete loss of significance in single precision.
+
+  This example should be compared to [E8]
+

@@ -1,0 +1,17 @@
+Last updated: 2015 July 20
+------------
+
+Change log
+----------
+
+2015 Jul 30
+
+ - Added evaluation of the dipole-acceleration expectation value for
+   multiplicative effective potentials.
+
+   The implementation of dipole acceleration (subroutine wt_dipole in
+   wavefunction_tools.f90) requires gradient of the effective interation
+   potential. The gradient is calculated in initialize_channel_potentials
+   (spherical_data.f90) by numerical differentiation of the user-supplied
+   potential. Numerical differentiation step is controlled by the parameter
+   SD_RGRID_GRAD_DELTA.

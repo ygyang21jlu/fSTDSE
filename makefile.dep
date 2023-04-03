@@ -1,0 +1,56 @@
+accuracy.o: accuracy.f90 
+
+bicg_tools.o: bicg_tools.f90 accuracy.o timer.o 
+
+build_pes.o: build_pes.f90 accuracy.o timer.o 
+
+cap_tools.o: cap_tools.f90 accuracy.o constants.o timer.o 
+
+composition_analysis.o: composition_analysis.f90 accuracy.o constants.o spherical_data.o timer.o wavefunction_tools.o 
+
+constants.o: constants.f90 accuracy.o 
+
+dgedi__genmod.o: dgedi__genmod.f90 
+
+dgefa__genmod.o: dgefa__genmod.f90 
+
+lapack.o: lapack.f90 accuracy.o 
+
+math.o: math.f90 accuracy.o constants.o 
+
+potential_tools.o: potential_tools.f90 accuracy.o constants.o timer.o 
+
+propagator_tools.o: propagator_tools.f90 accuracy.o bicg_tools.o constants.o lapack.o spherical_data.o timer.o tridiagonal_tools.o 
+
+rotation_tools.o: rotation_tools.f90 accuracy.o constants.o math.o spherical_data.o timer.o tridiagonal_tools.o 
+
+sort_tools.o: sort_tools.f90 accuracy.o 
+
+spherical_data.o: spherical_data.f90 accuracy.o cap_tools.o constants.o potential_tools.o timer.o tridiagonal_tools.o 
+
+spherical_tdse.o: spherical_tdse.f90 accuracy.o bicg_tools.o cap_tools.o composition_analysis.o constants.o math.o potential_tools.o propagator_tools.o rotation_tools.o spherical_data.o test_tools.o timer.o tridiagonal_tools.o vectorpotential_tools.o wavefunction_tools.o 
+
+test_tools.o: test_tools.f90 accuracy.o constants.o lapack.o potential_tools.o propagator_tools.o sort_tools.o spherical_data.o timer.o tridiagonal_tools.o wavefunction_tools.o 
+
+timer.o: timer.f90 accuracy.o 
+
+tridiagonal_tools.o: tridiagonal_tools.f90 accuracy.o constants.o timer.o tridiagonal_tools_m3d_decompose_common.f90 tridiagonal_tools_m3d_left_scale_common.f90 tridiagonal_tools_m3d_multiply_common.f90 tridiagonal_tools_m3d_multiply_g_common.f90 tridiagonal_tools_m3d_right_scale_common.f90 tridiagonal_tools_m3d_solve_common.f90 tridiagonal_tools_m3d_solve_g_common.f90 
+
+tridiagonal_tools_m3d_decompose_common.o: tridiagonal_tools_m3d_decompose_common.f90 
+
+tridiagonal_tools_m3d_left_scale_common.o: tridiagonal_tools_m3d_left_scale_common.f90 
+
+tridiagonal_tools_m3d_multiply_common.o: tridiagonal_tools_m3d_multiply_common.f90 
+
+tridiagonal_tools_m3d_multiply_g_common.o: tridiagonal_tools_m3d_multiply_g_common.f90 
+
+tridiagonal_tools_m3d_right_scale_common.o: tridiagonal_tools_m3d_right_scale_common.f90 
+
+tridiagonal_tools_m3d_solve_common.o: tridiagonal_tools_m3d_solve_common.f90 
+
+tridiagonal_tools_m3d_solve_g_common.o: tridiagonal_tools_m3d_solve_g_common.f90 
+
+vectorpotential_tools.o: vectorpotential_tools.f90 accuracy.o constants.o 
+
+wavefunction_tools.o: wavefunction_tools.f90 accuracy.o constants.o lapack.o math.o sort_tools.o spherical_data.o timer.o tridiagonal_tools.o 
+
