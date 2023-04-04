@@ -41,6 +41,8 @@ module potential_tools
       case ('argon 2P')
         write (out,"('""Argon"" valence-only potential, inspired by H.G. Muller, PRA 60, 1341 (1999).')")
         write (out,"('WARNING: This is NOT the same potential as HGM Eq. 2!')")
+      case ('scp')
+        write (out,"('lamda = ',g24.13)") pot_param(1)
     end select 
   end subroutine pt_initialize
   !
@@ -82,6 +84,8 @@ module potential_tools
           zeff = zeff - 124.55_rk/(1._rk + exp(arg))
         end if
         v = electron_charge*zeff/r
+      case ('scp') 
+        v = electron_charge*exp(-pot_param(1)*r)/r
     end select 
     ! 
     !  Add the universal centrifugal term. Nominally, that's a kinetic energy contribution, but ...
